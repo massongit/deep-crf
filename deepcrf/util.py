@@ -207,8 +207,7 @@ def conll_eval(gold_predict_pairs, flag=True, tag_class=None):
 
             correct_cnt, gold_cnt, predict_cnt = range_metric_cnt(_gold_phrases, _predict_phrases)
             cnt_phrases_dict[tag_name]['gold_cnt'] += gold_cnt if len(_gold_phrases) > 0 else 0
-            cnt_phrases_dict[tag_name][
-                'predict_cnt'] += predict_cnt if len(_predict_phrases) > 0 else 0
+            cnt_phrases_dict[tag_name]['predict_cnt'] += predict_cnt if len(_predict_phrases) > 0 else 0
             cnt_phrases_dict[tag_name]['correct_cnt'] += correct_cnt
 
     lst_gold_phrase = n_phrases_dict['gold']
