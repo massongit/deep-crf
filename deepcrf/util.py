@@ -37,8 +37,7 @@ def build_vocab(dataset, min_count=0):
 
 
 def build_tag_vocab(dataset, tag_idx=-1):
-    pos_tags = list(set(flatten([[w[tag_idx] for w in word_objs]
-                                 for word_objs in dataset])))
+    pos_tags = list(set(flatten([[w[tag_idx] for w in word_objs] for word_objs in dataset])))
     pos_tags = sorted(pos_tags)
     vocab = {}
     for pos in pos_tags:
@@ -312,10 +311,8 @@ def parse_to_tag_ids(sentences, xp, vocab, UNK_IDX, idx=-1):
 
 
 def parse_raw_text(sentence, xp, vocab, vocab_char, UNK_IDX, CHAR_UNK_IDX):
-    x_data = [xp.array([vocab.get(w.lower(), UNK_IDX) for w in sentence],
-                       dtype=xp.int32)]
-    x_data_char = [[xp.array([vocab_char.get(c, CHAR_UNK_IDX) for c in w],
-                             dtype=xp.int32) for w in sentence]]
+    x_data = [xp.array([vocab.get(w.lower(), UNK_IDX) for w in sentence], dtype=xp.int32)]
+    x_data_char = [[xp.array([vocab_char.get(c, CHAR_UNK_IDX) for c in w], dtype=xp.int32) for w in sentence]]
 
     return x_data, x_data_char
 

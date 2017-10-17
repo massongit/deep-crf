@@ -218,8 +218,7 @@ def run(data_file, is_train=False, **args):
     x_dev_additionals = [parse_to_word_ids(sentences_dev, ad_feat_id, vocab_adds[i])
                          for i, ad_feat_id in enumerate(additional_input_idx)]
 
-    y_dev_cpu = [[w[-1] for w in sentence]
-                 for sentence in sentences_dev]
+    y_dev_cpu = [[w[-1] for w in sentence] for sentence in sentences_dev]
     # tag_names = []
     tag_names = list(set([tag[2:] if len(tag) >= 2 else tag[0] for tag in vocab_tags.keys()]))
 
