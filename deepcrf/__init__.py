@@ -57,7 +57,7 @@ def cli():
 @click.option('--efficient_gpu', type=int, default=1, help='efficient_gpu (if efficient_gpu == 1, it needs small GPU memory)')
 def train(train_file, **args):
     # load input_file
-    main.run(train_file, is_train=True, **args)
+    deepcrf.main.run(train_file, is_train=True, **args)
 
 
 @cli.command()
@@ -107,7 +107,7 @@ def train(train_file, **args):
 @click.option('--use_cudnn', type=int, default=1, help='use_cudnn = 0 or 1')
 @click.option('--efficient_gpu', type=int, default=1, help='efficient_gpu (if efficient_gpu == 1, it needs small GPU memory)')
 def predict(input_file, **args):
-    main.run(input_file, is_train=False, **args)
+    deepcrf.main.run(input_file, is_train=False, **args)
 
 
 @cli.command()
@@ -115,4 +115,4 @@ def predict(input_file, **args):
 @click.argument('predicted_file', type=click.Path(exists=True))
 @click.option('--tag_type', type=str, default='BIOES', help='select from [BIO, BIOES]')
 def eval(gold_file, predicted_file, **args):
-    evaluate.run(gold_file, predicted_file, **args)
+    deepcrf.evaluate.run(gold_file, predicted_file, **args)
