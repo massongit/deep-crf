@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
 import re
-import numpy as np
-
 from itertools import chain
 
+import numpy as np
 import six
 
 pattern_num = re.compile(r'[0-9]')

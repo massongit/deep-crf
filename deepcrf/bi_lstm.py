@@ -2,29 +2,21 @@
 # -*- coding: utf-8 -*-
 
 import random
+
+import chainer
+import chainer.functions as F
+import chainer.links as L
 import numpy as np
+import six.moves
+from chainer.cuda import to_cpu
+
+from .cnn import CharCNNEncoder
+from .util_chainer import my_variable, my_dropout, my_set_train, my_rnn_link
+
 random.seed(1234)
 np.random.seed(1234)
 
-import chainer
-from chainer import Chain, cuda
-from chainer import function, functions, links, optimizer
-from chainer import Variable, optimizers, serializers
-import chainer.functions as F
-import chainer.links as L
-import math
-from chainer import initializers
-
-from .cnn import CharCNNEncoder
-import deepcrf.util
-from .util import PADDING, UNKWORD
-
-import six.moves
-
-to_cpu = chainer.cuda.to_cpu
-
 version = chainer.__version__
-from .util_chainer import my_variable, my_dropout, my_set_train, my_rnn_link
 
 
 class BiLSTM_CNN_CRF(chainer.Chain):

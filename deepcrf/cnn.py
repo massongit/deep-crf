@@ -2,19 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import chainer
-from chainer import Chain, cuda
-from chainer import function, functions, links, optimizer
-from chainer import Variable, optimizers, serializers
 import chainer.functions as F
 import chainer.links as L
-import numpy as np
 import six.moves
 
-
-from .util import UNKWORD, PADDING, BOS
-
-
-from .util_chainer import my_variable, my_dropout, my_set_train, my_rnn_link
+from .util_chainer import my_variable, my_set_train
 
 
 class BaseCNNEncoder(chainer.Chain):

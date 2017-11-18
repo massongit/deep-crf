@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import chainer
-from chainer import Variable
 import chainer.functions as F
+from chainer import Variable
 
 version = chainer.__version__
 

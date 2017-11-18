@@ -1,33 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
 import os
-os.environ["CHAINER_SEED"] = "1234"
-
 import random
+
+import chainer
 import numpy as np
+import six
+from chainer import cuda, optimizers, serializers
+from chainer.cuda import to_cpu
+
+import deepcrf.util
+from .bi_lstm import BiLSTM_CNN_CRF
+from .util import PADDING, UNKWORD
+
+os.environ["CHAINER_SEED"] = "1234"
 random.seed(1234)
 np.random.seed(1234)
 
-import chainer
-from chainer import cuda
-from chainer import optimizers
-from chainer import serializers
-import chainer.functions as F
-
-from .bi_lstm import BiLSTM_CNN_CRF
-
-import deepcrf.util
-from .util import PADDING, UNKWORD
-
-
-import logging
 logger = logging.getLogger(__name__)
-
-to_cpu = chainer.cuda.to_cpu
-
-import os.path
-import six
 
 version = chainer.__version__
 
