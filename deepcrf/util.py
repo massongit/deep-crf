@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
+import json
 import re
 import numpy as np
 
@@ -53,18 +52,13 @@ def build_tag_vocab(dataset, tag_idx=-1):
 
 def write_vocab(filename, vocab):
     with open(filename, 'w') as f:
-        for e in sorted([[unicode_to_str_python2(w), to_str(i)] for w, i in six.iteritems(vocab)], key=lambda x: x[1]):
-            line = '\t'.join(e)
-            f.write(line + '\n')
+        f.write(unicode_to_str_python2(json.dumps(vocab, indent=4,
+                                                  sort_keys=True, ensure_ascii=False)))
 
 
 def load_vocab(filename):
-    vocab = {}
     with open(filename) as f:
-        for l in f:
-            w, idx = str_to_unicode_python2(l).strip().split(u'\t')
-            vocab[w] = int(idx)
-    return vocab
+        return json.load(f)
 
 
 def read_raw_file(filename, delimiter=u' '):
@@ -341,19 +335,6 @@ def uniq_tagset(alltags_list, tag_names=[]):
             if tagname != u'' and tagname not in tag_names:
                 tag_names.append(tagname)
     return tag_names
-
-
-def to_str(s):
-    """
-    Convert to str
-    :param s: something
-    :return: str
-    """
-    if six.PY2 and isinstance(s, unicode):
-        s = unicode_to_str_python2(s)
-    elif not isinstance(s, str):
-        s = str(s)
-    return s
 
 
 def unicode_to_str_python2(u):
