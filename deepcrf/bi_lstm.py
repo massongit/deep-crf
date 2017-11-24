@@ -35,8 +35,6 @@ class BiLSTM_CNN_CRF(chainer.Chain):
                  char_hidden_dim=100, rnn_name='bilstm', demo=False,
                  use_cudnn=True,
                  n_add_feature_dim=0, n_add_feature=0, n_vocab_add=[], initial_model=None):
-        super(BiLSTM_CNN_CRF, self).__init__()
-
         # feature_dim = emb_dim + add_dim + pos_dim
         n_dir = 2 if use_bi else 1
         feature_dim = emb_dim + n_add_feature_dim * n_add_feature
@@ -57,6 +55,10 @@ class BiLSTM_CNN_CRF(chainer.Chain):
 
         rnn_link = rnn_links[rnn_names.index(rnn_name)]
 
+        super(BiLSTM_CNN_CRF, self).__init__(
+            output_layer=L.Linear(hidden_dim * n_dir, n_label)
+        )
+
         if getattr(initial_model, 'word_embed', None):
             self.add_link('word_embed',
                           copy.deepcopy(getattr(initial_model, 'word_embed')))
@@ -69,13 +71,6 @@ class BiLSTM_CNN_CRF(chainer.Chain):
         else:
             self.add_link('rnn', my_rnn_link(rnn_link, n_layers, feature_dim,
                                              hidden_dim, use_dropout, use_cudnn))
-
-        if getattr(initial_model, 'output_layer', None):
-            self.add_link('output_layer',
-                          copy.deepcopy(getattr(initial_model, 'output_layer')))
-        else:
-            self.add_link('output_layer',
-                          L.Linear(hidden_dim * n_dir, n_label))
 
         if init_emb is not None:
             self.word_embed.W.data[:] = init_emb[:]
