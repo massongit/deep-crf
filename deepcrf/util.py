@@ -108,39 +108,49 @@ def read_conll_file(filenames, delimiter=u'\t', input_idx=0, output_idx=-1):
     return sentences
 
 
-def load_glove_embedding(filename, vocab):
+def load_embedding(filename, vocab):
     word_ids = []
     word_vecs = []
     with open(filename) as f:
-        for i, l in enumerate(f):
+        i = 0
+        for l in f:
             l = str_to_unicode_python2(l).split(u' ')
-            word = l[0].lower()
+            if 2 < len(l):
+                word = l[0].lower()
 
-            if word in vocab:
-                word_ids.append(vocab.get(word))
-                vec = l[1:]
-                vec = list(map(float, vec))
-                word_vecs.append(vec)
+                if word in vocab:
+                    word_ids.append(vocab.get(word))
+                    vec = l[1:]
+                    vec = list(map(float, vec))
+                    word_vecs.append(vec)
+
+                i += 1
+
     word_ids = np.array(word_ids, dtype=np.int32)
     word_vecs = np.array(word_vecs, dtype=np.float32)
     return word_ids, word_vecs
 
 
-def load_glove_embedding_include_vocab(filename):
+def load_embedding_include_vocab(filename):
     word_vecs = []
     vocab = {}
     vocab[PADDING] = len(vocab)
     vocab[UNKWORD] = len(vocab)
 
     with open(filename) as f:
-        for i, l in enumerate(f):
+        i = 0
+        for l in f:
             l = str_to_unicode_python2(l).split(u' ')
-            word = l[0].lower()
-            if word not in vocab:
-                vocab[word] = len(vocab)
-                vec = l[1:]
-                vec = list(map(float, vec))
-                word_vecs.append(vec)
+            if 2 < len(l):
+                word = l[0].lower()
+
+                if word not in vocab:
+                    vocab[word] = len(vocab)
+                    vec = l[1:]
+                    vec = list(map(float, vec))
+                    word_vecs.append(vec)
+
+                i += 1
 
     # PADDING, UNKWORD
     word_vecs.insert(0, np.random.random((len(vec),)))

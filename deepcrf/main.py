@@ -173,15 +173,15 @@ def run(data_file, is_train=False, **args):
 
         if word_emb_vocab_type == 'replace_all':
             # replace all vocab by Pre-trained embeddings
-            word_vecs, vocab_glove = deepcrf.util.load_glove_embedding_include_vocab(emb_file)
-            vocab = vocab_glove
+            word_vecs, vocab_emb = deepcrf.util.load_embedding_include_vocab(emb_file)
+            vocab = vocab_emb
         elif word_emb_vocab_type == 'replace_only':
-            word_ids, word_vecs = deepcrf.util.load_glove_embedding(emb_file, vocab)
+            word_ids, word_vecs = deepcrf.util.load_embedding(emb_file, vocab)
             assert_no_emb(word_vecs)
         elif word_emb_vocab_type == 'additional':
-            word_vecs, vocab_glove = deepcrf.util.load_glove_embedding_include_vocab(emb_file)
+            word_vecs, vocab_emb = deepcrf.util.load_embedding_include_vocab(emb_file)
             additional_vecs = []
-            for word, word_idx in sorted(six.iteritems(vocab_glove), key=lambda x: x[1]):
+            for word, word_idx in sorted(six.iteritems(vocab_emb), key=lambda x: x[1]):
                 if word not in vocab:
                     vocab[word] = len(vocab)
                     additional_vecs.append(word_vecs[word_idx])
