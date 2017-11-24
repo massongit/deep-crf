@@ -123,6 +123,23 @@ man     NN  O
 ```
 Note that `--input_idx` means that input features (but word feature must be 0-index) like this example.
 
+### Fine-tuning Support
+```
+$ deep-crf train input_file.txt --delimiter=' ' --dev_file input_file_dev.txt --save_dir save_model_dir --model_filename save_model_dir_base/bilstm-cnn-crf_epoch49.model --model_attr_filename save_model_dir_base/bilstm-cnn-crf_adam.model_attr --initial_links_filename initial_links.json
+```
+
+```
+$ cat initial_links.json
+[
+    "char_cnn",
+    "word_embed",
+    "add_embed_0",
+    "add_embed_1",
+    "rnn"
+]
+```
+
+Note that `--initial_links_filename` means that path of JSON file in list of links for initialization. This list can include `char_cnn`, `word_embed`, `add_embed_n` (`n` is an integer) and `rnn`.
 
 ### Multi-Task Learning Support
 (Now developing this multi-task learning mode...)
