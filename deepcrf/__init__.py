@@ -51,6 +51,8 @@ def cli():
 @click.option('--dev_file', type=click.Path(), help='development file to use early stopping')
 @click.option('--test_file', type=click.Path())
 @click.option('--model_filename', type=click.Path())
+@click.option('--model_attr_filename', type=click.Path(), help='file name of attributes of model')
+@click.option('--initial_links_filename', type=click.Path(), help='file name of links for initialization')
 @click.option('--input_idx', type=str, default='0', help='input_idx for features.')
 @click.option('--output_idx', type=str, default='-1', help='output_idx for predicting.')
 @click.option('--delimiter', type=str, default='\t',
@@ -63,7 +65,7 @@ def cli():
               help='1: input file contains file path for each line.')
 def train(train_file, **args):
     # load input_file
-    main.run(train_file, is_train=True, **args)
+    deepcrf.main.run(train_file, is_train=True, **args)
 
 
 @cli.command()
@@ -116,7 +118,7 @@ def train(train_file, **args):
 @click.option('--use_list_files', type=int, default=0,
               help='1: input file contains file path for each line.')
 def predict(input_file, **args):
-    main.run(input_file, is_train=False, **args)
+    deepcrf.main.run(input_file, is_train=False, **args)
 
 
 @cli.command()
@@ -124,4 +126,4 @@ def predict(input_file, **args):
 @click.argument('predicted_file', type=click.Path(exists=True))
 @click.option('--tag_type', type=str, default='BIOES', help='select from [BIO, BIOES]')
 def eval(gold_file, predicted_file, **args):
-    evaluate.run(gold_file, predicted_file, **args)
+    deepcrf.evaluate.run(gold_file, predicted_file, **args)

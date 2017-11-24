@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import copy
 import random
 import numpy as np
 random.seed(1234)
@@ -33,7 +34,9 @@ class BiLSTM_CNN_CRF(chainer.Chain):
                  n_label=0, use_crf=True, use_bi=True, char_input_dim=100,
                  char_hidden_dim=100, rnn_name='bilstm', demo=False,
                  use_cudnn=True,
-                 n_add_feature_dim=0, n_add_feature=0, n_vocab_add=[]):
+                 n_add_feature_dim=0, n_add_feature=0, n_vocab_add=[], initial_model=None):
+        super(BiLSTM_CNN_CRF, self).__init__()
+
         # feature_dim = emb_dim + add_dim + pos_dim
         n_dir = 2 if use_bi else 1
         feature_dim = emb_dim + n_add_feature_dim * n_add_feature
@@ -54,26 +57,49 @@ class BiLSTM_CNN_CRF(chainer.Chain):
 
         rnn_link = rnn_links[rnn_names.index(rnn_name)]
 
-        super(BiLSTM_CNN_CRF, self).__init__(
-            word_embed=L.EmbedID(n_vocab, emb_dim, ignore_label=-1),
-            rnn=my_rnn_link(rnn_link, n_layers, feature_dim, hidden_dim, use_dropout, use_cudnn),
-            output_layer=L.Linear(hidden_dim * n_dir, n_label),
-        )
+        if getattr(initial_model, 'word_embed', None):
+            self.add_link('word_embed',
+                          copy.deepcopy(getattr(initial_model, 'word_embed')))
+        else:
+            self.add_link('word_embed',
+                          L.EmbedID(n_vocab, emb_dim, ignore_label=-1))
+
+        if getattr(initial_model, 'rnn', None):
+            self.add_link('rnn', copy.deepcopy(getattr(initial_model, 'rnn')))
+        else:
+            self.add_link('rnn', my_rnn_link(rnn_link, n_layers, feature_dim,
+                                             hidden_dim, use_dropout, use_cudnn))
+
+        if getattr(initial_model, 'output_layer', None):
+            self.add_link('output_layer',
+                          copy.deepcopy(getattr(initial_model, 'output_layer')))
+        else:
+            self.add_link('output_layer',
+                          L.Linear(hidden_dim * n_dir, n_label))
+
         if init_emb is not None:
             self.word_embed.W.data[:] = init_emb[:]
 
         if use_char:
-            char_cnn = CharCNNEncoder(emb_dim=char_input_dim, window_size=3,
-                                      hidden_dim=char_hidden_dim,
-                                      vocab_size=n_char_vocab, init_emb=None,
-                                      PAD_IDX=0)
-            self.add_link('char_cnn', char_cnn)
+            if getattr(initial_model, 'char_cnn', None):
+                self.add_link('char_cnn',
+                              copy.deepcopy(getattr(initial_model, 'char_cnn')))
+            else:
+                self.add_link('char_cnn', CharCNNEncoder(emb_dim=char_input_dim, window_size=3,
+                                                         hidden_dim=char_hidden_dim,
+                                                         vocab_size=n_char_vocab, init_emb=None,
+                                                         PAD_IDX=0))
 
         if self.n_add_feature:
             for i in six.moves.xrange(self.n_add_feature):
                 n_add_vocab = n_vocab_add[i]
-                add_embed = L.EmbedID(n_add_vocab, n_add_feature_dim, ignore_label=-1)
-                self.add_link('add_embed_' + str(i), add_embed)
+                add_embed_name = 'add_embed_' + str(i)
+                if getattr(initial_model, add_embed_name, None):
+                    self.add_link(add_embed_name,
+                                  copy.deepcopy(getattr(initial_model, add_embed_name)))
+                else:
+                    self.add_link(add_embed_name,
+                                  L.EmbedID(n_add_vocab, n_add_feature_dim, ignore_label=-1))
 
         # if n_pos:
         #     pos_embed = L.EmbedID(n_pos, pos_dim, ignore_label=-1)

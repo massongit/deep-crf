@@ -292,17 +292,41 @@ def run(data_file, is_train=False, **args):
 
     n_vocab_add = [len(_vadd) for _vadd in vocab_adds]
 
-    net = BiLSTM_CNN_CRF(n_vocab=len(vocab), n_char_vocab=len(vocab_char),
-                         emb_dim=args['n_word_emb'],
-                         hidden_dim=args['n_hidden'],
-                         n_layers=args['n_layer'], init_emb=init_emb,
-                         char_input_dim=args['n_char_emb'],
-                         char_hidden_dim=args['n_char_hidden'],
-                         n_label=len(vocab_tags),
-                         n_add_feature_dim=args['n_add_feature_emb'],
-                         n_add_feature=len(n_vocab_add),
-                         n_vocab_add=n_vocab_add,
-                         use_cudnn=args['use_cudnn'])
+    net_attrs = {'n_vocab': len(vocab), 'n_char_vocab': len(vocab_char),
+                 'emb_dim': args['n_word_emb'],
+                 'hidden_dim': args['n_hidden'],
+                 'n_layers': args['n_layer'], 'init_emb': init_emb,
+                 'char_input_dim': args['n_char_emb'],
+                 'char_hidden_dim': args['n_char_hidden'],
+                 'n_label': len(vocab_tags),
+                 'n_add_feature_dim': args['n_add_feature_emb'],
+                 'n_add_feature': len(n_vocab_add),
+                 'n_vocab_add': n_vocab_add,
+                 'use_cudnn': args['use_cudnn']}
+
+    deepcrf.util.write_vocab(save_name + '.model_attr', net_attrs)
+    model_filename = args['model_filename'] if args['model_filename'] else None
+
+    if args['initial_links_filename']:
+        net_attrs['initial_model'] = BiLSTM_CNN_CRF(
+            **deepcrf.util.load_vocab(args['model_attr_filename']))
+        serializers.load_hdf5(model_filename, net_attrs['initial_model'])
+        fine_tuning_links = set(deepcrf.util.load_vocab(
+            args['initial_links_filename']))
+        model_links = set()
+
+        for link in net_attrs['initial_model'].namedlinks():
+            link = link[0].split('/')[1]
+            if link:
+                model_links.add(link)
+
+        for link in model_links - fine_tuning_links:
+            setattr(net_attrs['initial_model'], link, None)
+
+        deepcrf.util.write_vocab(save_name + '.fine-tuning_links',
+                                 list(model_links & fine_tuning_links))
+
+    net = BiLSTM_CNN_CRF(**net_attrs)
     my_cudnn(args['use_cudnn'])
 
     if args.get('word_emb_file', False):
@@ -374,8 +398,7 @@ def run(data_file, is_train=False, **args):
 
         return predict_lists, sum_loss, predicted_results
 
-    if args['model_filename']:
-        model_filename = args['model_filename']
+    if model_filename is not None and not args['initial_links_filename']:
         serializers.load_hdf5(model_filename, net)
 
     if is_test:
