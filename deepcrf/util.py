@@ -120,10 +120,14 @@ def load_glove_embedding(filename, vocab):
                 word_ids.append(vocab.get(word))
                 vec = l[1:]
                 vec = list(map(float, vec))
+
+                if i == 0:
+                    emb_dim = len(vec)
+
                 word_vecs.append(vec)
     word_ids = np.array(word_ids, dtype=np.int32)
     word_vecs = np.array(word_vecs, dtype=np.float32)
-    return word_ids, word_vecs
+    return word_ids, word_vecs, emb_dim
 
 
 def load_glove_embedding_include_vocab(filename):
@@ -140,6 +144,10 @@ def load_glove_embedding_include_vocab(filename):
                 vocab[word] = len(vocab)
                 vec = l[1:]
                 vec = list(map(float, vec))
+
+                if i == 0:
+                    emb_dim = len(vec)
+
                 word_vecs.append(vec)
 
     # PADDING, UNKWORD
@@ -147,7 +155,7 @@ def load_glove_embedding_include_vocab(filename):
     word_vecs.insert(0, np.random.random((len(vec),)))
 
     word_vecs = np.array(word_vecs, dtype=np.float32)
-    return word_vecs, vocab
+    return word_vecs, vocab, emb_dim
 
 
 # Conll 03 shared task evaluation code (IOB format only)
