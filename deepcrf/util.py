@@ -108,7 +108,7 @@ def read_conll_file(filenames, delimiter=u'\t', input_idx=0, output_idx=-1):
     return sentences
 
 
-def load_embedding(filename, vocab):
+def load_word_embedding(filename, vocab):
     word_ids = []
     word_vecs = []
     with open(filename) as f:
@@ -131,7 +131,7 @@ def load_embedding(filename, vocab):
     return word_ids, word_vecs
 
 
-def load_embedding_include_vocab(filename):
+def load_word_embedding_include_vocab(filename):
     word_vecs = []
     vocab = {}
     vocab[PADDING] = len(vocab)
