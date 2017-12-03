@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
 import re
-import numpy as np
-
 from itertools import chain
 
+import numpy as np
 import six
 
 pattern_num = re.compile(r'[0-9]')
@@ -240,9 +237,9 @@ def conll_eval(gold_predict_pairs, flag=True, tag_class=None):
         f_measure = (2 * recall * precision) / (sum_recall_precision)
         evals[tag_name] = [precision * 100.0, recall * 100.0, f_measure * 100.0]
 
-    correct_cnt = sum([ev['correct_cnt'] for tag_name, ev in six.iteritems(cnt_phrases_dict)])
-    gold_cnt = sum([ev['gold_cnt'] for tag_name, ev in six.iteritems(cnt_phrases_dict)])
-    predict_cnt = sum([ev['predict_cnt'] for tag_name, ev in six.iteritems(cnt_phrases_dict)])
+    correct_cnt = sum([ev['correct_cnt'] for ev in six.itervalues(cnt_phrases_dict)])
+    gold_cnt = sum([ev['gold_cnt'] for ev in six.itervalues(cnt_phrases_dict)])
+    predict_cnt = sum([ev['predict_cnt'] for ev in six.itervalues(cnt_phrases_dict)])
 
     recall = correct_cnt / float(gold_cnt) if gold_cnt else 0.0
     precision = correct_cnt / float(predict_cnt) if predict_cnt else 0.0
