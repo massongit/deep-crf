@@ -61,15 +61,16 @@ def load_vocab(filename):
         return json.load(f)
 
 
-def read_raw_file(filename, delimiter=u' '):
+def read_raw_file(filenames, delimiter=u' '):
     sentences = []
-    with open(filename) as f:
-        for l in f:
-            words = str_to_unicode_python2(l).strip().split(delimiter)
-            words = [w.strip() for w in words if len(w.strip()) != 0]
-            if len(words) and len(words[0]):
-                words = [(w, -1) for w in words]
-                sentences.append(words)
+    for filename in filenames:
+        with open(filename) as f:
+            for l in f:
+                words = str_to_unicode_python2(l).strip().split(delimiter)
+                words = [w.strip() for w in words if len(w.strip()) != 0]
+                if len(words) and len(words[0]):
+                    words = [(w, -1) for w in words]
+                    sentences.append(words)
     return sentences
 
 
@@ -92,7 +93,7 @@ def read_conll_file(filenames, delimiter=u'\t', input_idx=0, output_idx=-1):
                         n_features = len(l_split)
 
                     if n_features != len(l_split):
-                        val = (str(len(l_split)), str(len(line_idx)))
+                        val = (str(len(l_split)), str(line_idx))
                         err_msg = 'Invalid input feature sizes: "%s". \
                         Please check at line [%s]' % val
                         raise ValueError(err_msg)
