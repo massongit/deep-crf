@@ -61,13 +61,13 @@ class BiLSTM_CNN_CRF(chainer.Chain):
 
         if getattr(initial_model, 'word_embed', None):
             self.add_link('word_embed',
-                          copy.deepcopy(getattr(initial_model, 'word_embed')))
+                          deepcrf.util.get_initial_link(initial_model, 'word_embed'))
         else:
             self.add_link('word_embed',
                           L.EmbedID(n_vocab, emb_dim, ignore_label=-1))
 
         if getattr(initial_model, 'rnn', None):
-            self.add_link('rnn', copy.deepcopy(getattr(initial_model, 'rnn')))
+            self.add_link('rnn', deepcrf.util.get_initial_link(initial_model, 'rnn'))
         else:
             self.add_link('rnn', my_rnn_link(rnn_link, n_layers, feature_dim,
                                              hidden_dim, use_dropout, use_cudnn))
@@ -78,7 +78,7 @@ class BiLSTM_CNN_CRF(chainer.Chain):
         if use_char:
             if getattr(initial_model, 'char_cnn', None):
                 self.add_link('char_cnn',
-                              copy.deepcopy(getattr(initial_model, 'char_cnn')))
+                              deepcrf.util.get_initial_link(initial_model, 'char_cnn'))
             else:
                 self.add_link('char_cnn', CharCNNEncoder(emb_dim=char_input_dim, window_size=3,
                                                          hidden_dim=char_hidden_dim,
@@ -91,7 +91,7 @@ class BiLSTM_CNN_CRF(chainer.Chain):
                 add_embed_name = 'add_embed_' + str(i)
                 if getattr(initial_model, add_embed_name, None):
                     self.add_link(add_embed_name,
-                                  copy.deepcopy(getattr(initial_model, add_embed_name)))
+                                  deepcrf.util.get_initial_link(initial_model, add_embed_name))
                 else:
                     self.add_link(add_embed_name,
                                   L.EmbedID(n_add_vocab, n_add_feature_dim, ignore_label=-1))

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import copy
 import json
 import re
 import numpy as np
@@ -358,3 +359,9 @@ def str_to_unicode_python2(s):
     if six.PY2 and isinstance(s, str):
         s = s.decode('utf-8')
     return s
+
+
+def get_initial_link(model, name):
+    link = copy.deepcopy(getattr(model, name))
+    link.name = None
+    return link
