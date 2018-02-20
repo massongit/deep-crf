@@ -82,7 +82,7 @@ def read_conll_file(filenames, delimiter=u'\t', input_idx=0, output_idx=-1):
     for filename in filenames:
         with open(filename) as f:
             for line_idx, l in enumerate(f):
-                l_split = str_to_unicode_python2(l).strip().split(delimiter)
+                l_split = str_to_unicode_python2(l).split(delimiter)
                 l_split = [_.strip() for _ in l_split]
                 if len(l_split) <= 1:
                     if len(sentence) > 0:
